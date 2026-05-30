@@ -313,9 +313,53 @@
   .menu-pop button:hover { background: var(--line-soft); }
   .menu-trigger { border: 2px solid var(--line); background: var(--surface); color: var(--ink-soft); border-radius: 50%; width: 42px; height: 42px; font-size: 20px; cursor: pointer; transition: transform 0.1s; }
   .menu-trigger:active { transform: scale(0.9); }
+
+  /* lock screen */
+  .lock-screen {
+    position: fixed; inset: 0; z-index: 100; background: var(--bg);
+    background-image: radial-gradient(circle at 50% 18%, var(--bg2) 0, transparent 55%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px calc(24px + env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));
+  }
+  .lock-card { width: 100%; max-width: 300px; text-align: center; }
+  .lock-title { font-size: 20px; font-weight: 800; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .lock-sub { font-size: 14px; font-weight: 500; color: var(--ink-soft); margin: 0 0 26px; min-height: 20px; }
+  .lock-sub.err { color: var(--danger); font-weight: 700; }
+  .pin-dots { display: flex; gap: 16px; justify-content: center; margin-bottom: 30px; }
+  .pin-dots span {
+    width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--ink-faint);
+    transition: background 0.12s, border-color 0.12s, transform 0.12s;
+  }
+  .pin-dots span.on { background: var(--accent); border-color: var(--accent); transform: scale(1.1); }
+  .pin-dots.shake { animation: shake 0.4s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+  .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .keypad button {
+    font: inherit; font-size: 24px; font-weight: 600; cursor: pointer; color: var(--ink);
+    height: 64px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface);
+    transition: transform 0.08s, background 0.12s;
+  }
+  .keypad button:active { transform: scale(0.92); background: var(--line-soft); }
+  .keypad button.ghost { border-color: transparent; background: none; font-size: 16px; font-weight: 700; color: var(--ink-soft); }
+  .keypad button.ghost:active { background: var(--line-soft); }
 </style>
 </head>
 <body>
+
+<div id="lockScreen" class="lock-screen" style="display:none;">
+  <div class="lock-card">
+    <img src="icon-192.png" alt="" width="64" height="64" style="border-radius:16px;display:block;margin:0 auto 18px;" />
+    <p class="lock-title" id="lockTitle">Enter your PIN</p>
+    <p class="lock-sub" id="lockSub">MindBloom is locked.</p>
+    <div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span></div>
+    <div class="keypad" id="keypad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button class="ghost" data-k="cancel">Cancel</button><button data-k="0">0</button><button class="ghost" data-k="del">⌫</button>
+    </div>
+  </div>
+</div>
 
 <header>
   <div class="header-inner">
@@ -329,6 +373,7 @@
       <div class="menu-pop" id="menuPop">
         <button id="exportBtn">📤&nbsp; Export entries</button>
         <button id="importBtn">📥&nbsp; Import backup</button>
+        <button id="lockBtn">🔒&nbsp; <span id="lockBtnLabel">Set a PIN</span></button>
       </div>
     </div>
   </div>
@@ -1025,6 +1070,103 @@ $("fileInput").addEventListener("change", e=>{
 if("serviceWorker" in navigator){
   window.addEventListener("load", ()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
+
+/* ---- PIN lock (privacy curtain, not encryption) ---- */
+const PIN_KEY = "mindbloom-pin-v1";
+let pinMode = "unlock";   // "unlock" | "set" | "confirm" | "remove"
+let pinBuffer = "";
+let pinFirst = "";        // first entry when setting a new PIN
+
+function getPin(){ try { return localStorage.getItem(PIN_KEY) || ""; } catch { return ""; } }
+function hasPin(){ return getPin().length === 4; }
+
+function updateLockMenuLabel(){ $("lockBtnLabel").textContent = hasPin() ? "Change or remove PIN" : "Set a PIN"; }
+
+function renderDots(){
+  const dots = $("pinDots").children;
+  for(let i=0;i<4;i++){ dots[i].classList.toggle("on", i < pinBuffer.length); }
+}
+
+function showLock(mode){
+  pinMode = mode; pinBuffer = ""; pinFirst = "";
+  const t = $("lockTitle"), s = $("lockSub");
+  s.classList.remove("err");
+  if(mode==="unlock"){ t.textContent = "Enter your PIN"; s.textContent = "MindBloom is locked."; }
+  else if(mode==="set"){ t.textContent = "Choose a 4-digit PIN"; s.textContent = "You'll enter this when opening the app."; }
+  else if(mode==="confirm"){ t.textContent = "Confirm your PIN"; s.textContent = "Enter it once more."; }
+  else if(mode==="remove"){ t.textContent = "Enter current PIN"; s.textContent = "to change or remove it."; }
+  renderDots();
+  $("lockScreen").style.display = "flex";
+}
+function hideLock(){ $("lockScreen").style.display = "none"; pinBuffer=""; pinFirst=""; }
+
+function pinError(msg){
+  const s = $("lockSub"); s.textContent = msg; s.classList.add("err");
+  const d = $("pinDots"); d.classList.add("shake");
+  setTimeout(()=>{ d.classList.remove("shake"); pinBuffer=""; renderDots(); }, 420);
+}
+
+function pinComplete(){
+  if(pinMode==="unlock"){
+    if(pinBuffer===getPin()){ hideLock(); }
+    else { pinError("Wrong PIN. Try again."); }
+  } else if(pinMode==="set"){
+    pinFirst = pinBuffer; pinBuffer="";
+    pinMode="confirm"; $("lockTitle").textContent="Confirm your PIN";
+    $("lockSub").textContent="Enter it once more."; $("lockSub").classList.remove("err");
+    renderDots();
+  } else if(pinMode==="confirm"){
+    if(pinBuffer===pinFirst){
+      try { localStorage.setItem(PIN_KEY, pinBuffer); } catch {}
+      updateLockMenuLabel(); hideLock();
+    } else {
+      pinFirst=""; pinMode="set";
+      pinError("PINs didn't match. Start over.");
+      $("lockTitle").textContent="Choose a 4-digit PIN";
+    }
+  } else if(pinMode==="remove"){
+    if(pinBuffer===getPin()){
+      // correct current PIN -> offer to set a new one or remove
+      hideLock();
+      setTimeout(()=>{
+        if(confirm("Remove your PIN? Tap Cancel to set a new one instead.")){
+          try { localStorage.removeItem(PIN_KEY); } catch {}
+          updateLockMenuLabel();
+        } else {
+          showLock("set");
+        }
+      }, 150);
+    } else { pinError("Wrong PIN. Try again."); }
+  }
+}
+
+$("keypad").addEventListener("click", e=>{
+  const b = e.target.closest("[data-k]"); if(!b) return;
+  const k = b.getAttribute("data-k");
+  if(k==="cancel"){
+    if(pinMode==="unlock") return;   // can't cancel out of the unlock gate
+    hideLock(); return;
+  }
+  if(k==="del"){ pinBuffer = pinBuffer.slice(0,-1); renderDots(); return; }
+  if(pinBuffer.length>=4) return;
+  pinBuffer += k; renderDots();
+  if(pinBuffer.length===4) setTimeout(pinComplete, 120);
+});
+
+$("lockBtn").addEventListener("click", ()=>{
+  $("menuPop").classList.remove("open");
+  showLock(hasPin() ? "remove" : "set");
+});
+
+/* re-lock when the app is reopened or returns from background */
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState==="hidden" && hasPin()){
+    showLock("unlock");
+  }
+});
+
+updateLockMenuLabel();
+if(hasPin()) showLock("unlock");
 
 setTab("reframe");
 load();
