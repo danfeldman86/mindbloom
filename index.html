@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#4e7d3a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MindBloom" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<title>MindBloom</title>
+<style>
+  :root {
+    --bg: #f2e4cf;
+    --bg2: #ecd9bd;
+    --surface: #fdf8ee;
+    --ink: #3a2c1e;
+    --ink-soft: #7d6a52;
+    --ink-faint: #b09a7c;
+    --line: #e4d3b6;
+    --line-soft: #ecdfc8;
+    --accent: #4e7d3a;
+    --accent-d: #3c612c;
+    --accent-soft: #dce9cf;
+    --accent-ink: #335322;
+    --grape: #9c6b3f;
+    --teal: #2f8f6f;
+    --sun: #c98a3a;
+    --danger: #b5482f;
+    --radius: 20px;
+    --radius-sm: 13px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #241c12;
+      --bg2: #2d2417;
+      --surface: #2f2619;
+      --ink: #f0e6d5;
+      --ink-soft: #bda98c;
+      --ink-faint: #82704f;
+      --line: #423626;
+      --line-soft: #38301f;
+      --accent: #8fc06a;
+      --accent-d: #a2cf80;
+      --accent-soft: #34401f;
+      --accent-ink: #c7e0ab;
+      --grape: #c99a6a;
+      --teal: #5cc2a0;
+      --sun: #e0a85a;
+      --danger: #e08a73;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(circle at 12% 8%, var(--bg2) 0, transparent 42%), radial-gradient(circle at 88% 0%, var(--bg2) 0, transparent 38%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 18px 130px; }
+
+  header {
+    position: sticky; top: 0; z-index: 30;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: saturate(1.5) blur(14px);
+    -webkit-backdrop-filter: saturate(1.5) blur(14px);
+    padding: calc(env(safe-area-inset-top) + 18px) 18px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .header-inner { max-width: 640px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  h1 { font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -0.03em; display: flex; align-items: center; gap: 8px; }
+  h1 .emoji { display: inline-flex; align-items: center; animation: wiggle 4s ease-in-out infinite; }
+  @keyframes wiggle { 0%,92%,100%{transform:rotate(0)} 94%{transform:rotate(-12deg)} 96%{transform:rotate(10deg)} 98%{transform:rotate(-6deg)} }
+  .sub { font-size: 13px; color: var(--ink-soft); margin: 3px 0 0 2px; font-weight: 500; }
+
+  .search-row { max-width: 640px; margin: 14px auto 0; }
+  .search-row input {
+    width: 100%; font: inherit; font-size: 15px; font-weight: 500; padding: 11px 16px;
+    border: 2px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink);
+    transition: border-color 0.2s;
+  }
+  .search-row input:focus { outline: none; border-color: var(--accent); }
+
+  /* tabs */
+  .tabs { max-width: 640px; margin: 16px auto 0; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1 0 auto; white-space: nowrap; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+    background: none; border: none; color: var(--ink-faint); padding: 10px 10px 14px;
+    border-bottom: 3px solid transparent; transition: color 0.15s, border-color 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:active { transform: scale(0.97); }
+
+  /* instructions panel */
+  .howto {
+    background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 16px 18px; margin-top: 22px; animation: pop 0.3s ease both;
+  }
+  .howto h2 { font-size: 17px; font-weight: 800; margin: 0 0 4px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
+  .howto .tagline { font-size: 13.5px; color: var(--ink-soft); font-weight: 600; margin: 0 0 12px; }
+  .howto ol { margin: 0; padding: 0; list-style: none; counter-reset: step; }
+  .howto ol li {
+    counter-increment: step; position: relative; padding: 0 0 10px 32px; font-size: 14px; color: var(--ink); font-weight: 500;
+  }
+  .howto ol li:last-child { padding-bottom: 0; }
+  .howto ol li::before {
+    content: counter(step); position: absolute; left: 0; top: -1px;
+    width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink);
+    font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+  }
+  .howto .note { font-size: 13px; color: var(--ink-soft); font-weight: 500; margin: 12px 0 0; padding-top: 12px; border-top: 2px dashed var(--line); }
+
+  .day-group { margin-top: 26px; }
+  .day-label {
+    font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent); margin: 0 0 12px 6px; display: flex; align-items: center; gap: 7px;
+  }
+  .day-label::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+
+  .card {
+    background: var(--surface); border: 2px solid var(--line);
+    border-radius: var(--radius); padding: 16px 18px; margin-bottom: 13px;
+    animation: pop 0.32s cubic-bezier(0.34,1.56,0.64,1) both;
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(120,80,40,0.10); }
+  @keyframes pop { from { opacity: 0; transform: scale(0.96) translateY(8px); } }
+  .card.removing { animation: zip 0.28s ease forwards; }
+  @keyframes zip { to { opacity: 0; transform: scale(0.9) translateX(40px); margin-bottom: -60px; max-height: 0; padding-top: 0; padding-bottom: 0; } }
+  .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .time { font-size: 12px; color: var(--ink-faint); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .actions { display: flex; gap: 2px; flex-shrink: 0; }
+  .icon-btn {
+    border: none; background: none; cursor: pointer; color: var(--ink-faint);
+    font-size: 17px; padding: 7px; border-radius: 10px; line-height: 1; transition: background 0.15s, color 0.15s, transform 0.1s;
+  }
+  .icon-btn:hover { background: var(--line-soft); color: var(--ink); }
+  .icon-btn:active { transform: scale(0.85); }
+  .icon-btn.del:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+
+  .thought-text { font-size: 16.5px; color: var(--ink); margin: 11px 0 13px; font-weight: 500; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12.5px; font-weight: 700; padding: 5px 13px; border-radius: 999px; cursor: pointer;
+    border: 1.5px solid transparent;
+  }
+  .tag .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .reframe-block {
+    border-top: 2px dashed var(--line); margin-top: 13px; padding-top: 12px;
+    position: relative;
+  }
+  .reframe-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.09em; color: var(--teal); display: flex; align-items: center; gap: 5px; }
+  .reframe-label.lean { color: var(--grape); }
+  .reframe-text { font-size: 15px; color: var(--ink); margin: 5px 0 0; font-weight: 500; }
+
+  .empty { text-align: center; padding: 56px 20px; color: var(--ink-faint); }
+  .empty .big { font-size: 52px; margin-bottom: 14px; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .empty p { margin: 0; font-size: 16px; font-weight: 600; color: var(--ink-soft); }
+  .empty .hint { font-size: 14px; font-weight: 500; margin-top: 6px; }
+
+  .fab {
+    position: fixed; right: 20px; bottom: calc(22px + env(safe-area-inset-bottom));
+    height: 58px; padding: 0 24px 0 20px; border-radius: 999px; border: none; cursor: pointer;
+    background: var(--accent); color: #fff; font: inherit; font-size: 17px; font-weight: 700;
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 45%, transparent); z-index: 40;
+    display: flex; align-items: center; gap: 8px;
+    transition: transform 0.16s, box-shadow 0.16s;
+  }
+  .fab:hover { transform: translateY(-2px); box-shadow: 0 12px 30px color-mix(in srgb, var(--accent) 50%, transparent); }
+  .fab:active { transform: scale(0.93); }
+  .fab .plus { font-size: 26px; line-height: 0; margin-top: -2px; }
+
+  .sheet-backdrop {
+    position: fixed; inset: 0; z-index: 50; background: rgba(40,25,15,0.42);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+  .sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 51;
+    background: var(--surface); border-radius: 28px 28px 0 0;
+    max-width: 640px; margin: 0 auto; max-height: 92vh; overflow-y: auto;
+    transform: translateY(100%); transition: transform 0.34s cubic-bezier(0.32,0.72,0,1);
+    padding: 10px 20px calc(26px + env(safe-area-inset-bottom));
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 -8px 40px rgba(40,25,15,0.18);
+  }
+  .sheet.open { transform: translateY(0); }
+  .grabber { width: 42px; height: 5px; border-radius: 3px; background: var(--line); margin: 8px auto 16px; }
+  .sheet h2 { font-size: 21px; font-weight: 800; margin: 0 0 20px; letter-spacing: -0.02em; }
+
+  .field { margin-bottom: 18px; }
+  .field > label { display: block; font-size: 13px; font-weight: 700; color: var(--ink-soft); margin-bottom: 8px; }
+  .field .helper { font-size: 12.5px; font-weight: 500; color: var(--ink-faint); margin: -3px 0 8px; }
+  textarea, .picker-trigger {
+    width: 100%; font: inherit; font-size: 16px; font-weight: 500; color: var(--ink);
+    background: var(--bg); border: 2px solid var(--line); border-radius: var(--radius-sm); padding: 13px 15px;
+    transition: border-color 0.2s;
+  }
+  textarea { resize: vertical; min-height: 62px; }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .picker-trigger { text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .picker-trigger.placeholder { color: var(--ink-faint); }
+  .picker-trigger .chev { color: var(--ink-faint); font-size: 12px; }
+  .picker-trigger:active { border-color: var(--accent); }
+
+  .sheet-actions { display: flex; gap: 11px; margin-top: 6px; }
+  .btn {
+    font: inherit; font-size: 16px; font-weight: 700; cursor: pointer;
+    border-radius: var(--radius-sm); padding: 14px 18px; border: 2px solid var(--line);
+    background: var(--surface); color: var(--ink); transition: transform 0.12s, background 0.15s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:hover { background: var(--line-soft); }
+  .btn-primary { flex: 1; background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: var(--accent-d); }
+  .btn-danger { flex: 1; background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  .dlist { list-style: none; margin: 0; padding: 0; }
+  .dlist li {
+    border: 2px solid var(--line); border-radius: var(--radius-sm);
+    padding: 13px 15px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .dlist li:hover { border-color: var(--accent); }
+  .dlist li:active { transform: scale(0.99); }
+  .dlist li.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .dlist .swatch { width: 12px; height: 12px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .dname { font-size: 15.5px; font-weight: 700; color: var(--ink); }
+  .ddesc { font-size: 13.5px; color: var(--ink-soft); margin-top: 3px; font-weight: 500; }
+  .dnone { color: var(--ink-soft); }
+
+  /* values setup banner */
+  .values-setup {
+    background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 16px 18px; margin-top: 18px; display: flex; align-items: center; gap: 14px;
+    animation: pop 0.3s ease both;
+  }
+  .values-setup .vs-ico { font-size: 30px; flex-shrink: 0; }
+  .values-setup .vs-text { flex: 1; }
+  .values-setup .vs-title { font-size: 15px; font-weight: 800; }
+  .values-setup .vs-sub { font-size: 13px; color: var(--ink-soft); font-weight: 500; margin-top: 2px; }
+  .values-setup .vs-btn {
+    font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+    border-radius: 999px; padding: 9px 16px; border: 2px solid var(--accent); background: var(--accent); color: #fff;
+  }
+  .values-setup .vs-btn:active { transform: scale(0.96); }
+  .values-setup.compact .vs-btn { background: var(--surface); color: var(--accent); }
+
+  .my-values { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+  .vchip {
+    font-size: 12.5px; font-weight: 700; padding: 5px 12px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent-ink); border: 1.5px solid transparent;
+  }
+
+  /* value selection grid in sheet */
+  .vgrid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .vopt {
+    font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    padding: 8px 13px; border-radius: 999px; border: 2px solid var(--line);
+    background: var(--bg); color: var(--ink); transition: border-color 0.12s, background 0.12s, transform 0.08s;
+  }
+  .vopt:active { transform: scale(0.95); }
+  .vopt.sel { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-ink); }
+  .vcount { font-size: 13px; font-weight: 600; color: var(--ink-soft); margin: 0 0 14px; }
+
+  /* aligned / misaligned toggle */
+  .align-toggle { display: flex; gap: 9px; }
+  .align-toggle button {
+    flex: 1; font: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer;
+    padding: 12px; border-radius: var(--radius-sm); border: 2px solid var(--line);
+    background: var(--bg); color: var(--ink-soft); transition: all 0.12s;
+  }
+  .align-toggle button:active { transform: scale(0.98); }
+  .align-toggle button.sel-yes { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 14%, transparent); color: var(--teal); }
+  .align-toggle button.sel-no { border-color: var(--sun); background: color-mix(in srgb, var(--sun) 16%, transparent); color: var(--accent-ink); }
+
+  .align-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700;
+    padding: 5px 13px; border-radius: 999px; border: 1.5px solid transparent;
+  }
+  .align-badge.yes { background: color-mix(in srgb, var(--teal) 15%, transparent); color: var(--teal); border-color: color-mix(in srgb, var(--teal) 35%, transparent); }
+  .align-badge.no { background: color-mix(in srgb, var(--sun) 18%, transparent); color: var(--accent-ink); border-color: color-mix(in srgb, var(--sun) 40%, transparent); }
+  .card-values { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .card-vchip { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--line-soft); color: var(--ink-soft); }
+  .reframe-label.step { color: var(--accent); }
+
+  .confirm-box { text-align: center; padding: 6px 4px; }
+  .confirm-box .ico { font-size: 40px; margin-bottom: 8px; }
+  .confirm-box p { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .confirm-box .small { font-size: 14px; font-weight: 500; color: var(--ink-soft); margin: 0 0 20px; }
+
+  .menu { position: relative; }
+  .menu-pop {
+    position: absolute; right: 0; top: 44px; background: var(--surface);
+    border: 2px solid var(--line); border-radius: var(--radius-sm); padding: 7px;
+    box-shadow: 0 14px 36px rgba(40,25,15,0.2); min-width: 190px; display: none; z-index: 45;
+  }
+  .menu-pop.open { display: block; animation: pop 0.2s ease; }
+  .menu-pop button {
+    display: flex; width: 100%; align-items: center; gap: 11px; border: none; background: none;
+    font: inherit; font-size: 15px; font-weight: 600; color: var(--ink); padding: 11px 13px; border-radius: 9px; cursor: pointer; text-align: left;
+  }
+  .menu-pop button:hover { background: var(--line-soft); }
+  .menu-trigger { border: 2px solid var(--line); background: var(--surface); color: var(--ink-soft); border-radius: 50%; width: 42px; height: 42px; font-size: 20px; cursor: pointer; transition: transform 0.1s; }
+  .menu-trigger:active { transform: scale(0.9); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1><span class="emoji" aria-hidden="true"><img src="icon-192.png" alt="" width="34" height="34" style="display:block;border-radius:9px;" /></span> MindBloom</h1>
+      <p class="sub" id="count">—</p>
+    </div>
+    <div class="menu">
+      <button class="menu-trigger" id="menuBtn" aria-label="Menu">⋯</button>
+      <div class="menu-pop" id="menuPop">
+        <button id="exportBtn">📤&nbsp; Export entries</button>
+        <button id="importBtn">📥&nbsp; Import backup</button>
+      </div>
+    </div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="reframe">🌱 Thought Reframing</button>
+    <button class="tab" data-tab="lean">🌀 Leaning In</button>
+    <button class="tab" data-tab="values">🧭 Living My Values</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="search-row" style="margin-top:18px;">
+    <input id="search" type="search" placeholder="🔍  Search your entries…" autocomplete="off" />
+  </div>
+  <div id="howto"></div>
+  <div id="list"></div>
+</div>
+
+<button class="fab" id="fab" aria-label="New entry"><span class="plus">+</span> <span id="fabLabel">Catch a thought</span></button>
+
+<!-- Reframe entry sheet -->
+<div class="sheet-backdrop" id="entryBackdrop"></div>
+<div class="sheet" id="entrySheet" role="dialog" aria-modal="true">
+  <div class="grabber"></div>
+  <h2 id="sheetTitle">New thought</h2>
+  <div class="field">
+    <label for="thought">💭 The thought</label>
+    <textarea id="thought" rows="2" placeholder="What just went through your mind?"></textarea>
+  </div>
+  <div class="field">
+    <label>🎯 Cognitive distortion</label>
+    <button class="picker-trigger placeholder" id="distTrigger" type="button">
+      <span id="distLabel">Tap to choose…</span><span class="chev">▼</span>
+    </button>
+  </div>
+  <div class="field">
+    <label for="reframe">🌱 Reframe</label>
+    <textarea id="reframe" rows="2" placeholder="A kinder, more realistic way to see it…"></textarea>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn" id="cancelBtn">Cancel</button>
+    <button class="btn btn-primary" id="saveBtn">Save it</button>
+  </div>
+</div>
+
+<!-- Leaning In entry sheet -->
+<div class="sheet-backdrop" id="leanBackdrop"></div>
+<div class="sheet" id="leanSheet" role="dialog" aria-modal="true">
+  <div class="grabber"></div>
+  <h2 id="leanTitle">New worry</h2>
+  <div class="field">
+    <label for="leanThought">💭 The thought</label>
+    <textarea id="leanThought" rows="2" placeholder="The worry or fear, as it actually shows up…"></textarea>
+  </div>
+  <div class="field">
+    <label for="leanExag">🌀 Exaggerated to the extreme</label>
+    <p class="helper">Push it past the point of belief — the most absurd, over-the-top version of where the fear says things will go.</p>
+    <textarea id="leanExag" rows="3" placeholder="…and then what? Take it all the way to the ridiculous end."></textarea>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn" id="leanCancel">Cancel</button>
+    <button class="btn btn-primary" id="leanSave">Save it</button>
+  </div>
+</div>
+
+<!-- Values entry sheet -->
+<div class="sheet-backdrop" id="valBackdrop"></div>
+<div class="sheet" id="valSheet" role="dialog" aria-modal="true">
+  <div class="grabber"></div>
+  <h2 id="valTitle">New thought</h2>
+  <div class="field">
+    <label for="valThought">💭 The thought, choice, or action</label>
+    <textarea id="valThought" rows="2" placeholder="Something you thought, felt pulled toward, or did…"></textarea>
+  </div>
+  <div class="field">
+    <label>🧭 Did this move you toward or away from your values?</label>
+    <div class="align-toggle" id="alignToggle">
+      <button type="button" data-align="yes">✓ Toward</button>
+      <button type="button" data-align="no">↩ Away</button>
+    </div>
+  </div>
+  <div class="field">
+    <label>🎯 Which value(s) does it touch?</label>
+    <button class="picker-trigger placeholder" id="valTrigger" type="button">
+      <span id="valLabel">Tap to choose…</span><span class="chev">▼</span>
+    </button>
+  </div>
+  <div class="field" id="stepField">
+    <label for="valStep" id="stepLabel">🌱 A small step toward this value</label>
+    <p class="helper" id="stepHelper">What would living this value look like next time — even one small action?</p>
+    <textarea id="valStep" rows="2" placeholder="One small, doable step…"></textarea>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn" id="valCancel">Cancel</button>
+    <button class="btn btn-primary" id="valSave">Save it</button>
+  </div>
+</div>
+
+<!-- Values picker (multi-select, used both for setup and per-entry) -->
+<div class="sheet-backdrop" id="vpickBackdrop"></div>
+<div class="sheet" id="vpickSheet" role="dialog" aria-modal="true">
+  <div class="grabber"></div>
+  <h2 id="vpickTitle">Choose your core values</h2>
+  <p class="vcount" id="vpickHint">Pick the few that matter most — you can change these anytime.</p>
+  <div class="vgrid" id="vgrid"></div>
+  <div class="sheet-actions" style="position:sticky;bottom:0;background:var(--surface);padding-top:12px;margin-top:16px;">
+    <button class="btn" id="vpickCancel">Cancel</button>
+    <button class="btn btn-primary" id="vpickDone">Done</button>
+  </div>
+</div>
+
+<!-- distortion picker -->
+<div class="sheet-backdrop" id="pickBackdrop"></div>
+<div class="sheet" id="pickSheet" role="dialog" aria-modal="true">
+  <div class="grabber"></div>
+  <h2>Which pattern fits? 🤔</h2>
+  <ul class="dlist" id="dlist"></ul>
+</div>
+
+<!-- delete confirm -->
+<div class="sheet-backdrop" id="confirmBackdrop"></div>
+<div class="sheet" id="confirmSheet" role="dialog" aria-modal="true">
+  <div class="grabber"></div>
+  <div class="confirm-box">
+    <div class="ico">🗑️</div>
+    <p>Delete this entry?</p>
+    <p class="small">This one can't be undone.</p>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn" id="confirmCancel">Keep it</button>
+    <button class="btn btn-danger" id="confirmDelete">Delete</button>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="application/json" style="display:none" />
+
+<script>
+const DISTORTIONS = [
+  ["All-or-nothing thinking", "Seeing things in black & white — if it's not perfect, it's a total failure.", "#e8623f"],
+  ["Overgeneralization", "Treating one bad event as a never-ending pattern (\"always\", \"never\").", "#7a5cc4"],
+  ["Mental filter", "Dwelling on a single negative detail so everything looks dark.", "#1f9c87"],
+  ["Disqualifying the positive", "Rejecting good things by insisting they \"don't count\".", "#efa82a"],
+  ["Jumping to conclusions", "Deciding the worst with no real evidence for it.", "#d6452f"],
+  ["Mind reading", "Assuming you know others are thinking badly of you.", "#3a8fd6"],
+  ["Fortune telling", "Predicting things will turn out badly as if it's certain.", "#b8478a"],
+  ["Catastrophizing", "Blowing the importance of an event way out of proportion.", "#e8623f"],
+  ["Minimization", "Shrinking your own qualities or good outcomes until they seem tiny.", "#1f9c87"],
+  ["Emotional reasoning", "Taking feelings as facts — \"I feel it, so it must be true\".", "#7a5cc4"],
+  ["Should statements", "Beating yourself up with rigid \"should\" and \"must\" rules.", "#efa82a"],
+  ["Labeling", "Pinning a harsh global label on yourself (\"I'm a loser\").", "#d6452f"],
+  ["Personalization", "Blaming yourself for something you weren't fully responsible for.", "#3a8fd6"],
+  ["Blaming", "Holding others entirely at fault and overlooking your own part.", "#b8478a"]
+];
+const COLOR_OF = Object.fromEntries(DISTORTIONS.map(d => [d[0], d[2]]));
+
+// Standard ACT-style values list with brief original descriptions.
+const VALUES = [
+  ["Acceptance","Being open to experience as it is"],
+  ["Adventure","Seeking new, exciting experiences"],
+  ["Authenticity","Being true to yourself"],
+  ["Balance","Keeping different areas of life in proportion"],
+  ["Beauty","Appreciating or creating what's beautiful"],
+  ["Caring","Looking after yourself and others"],
+  ["Challenge","Stretching and testing yourself"],
+  ["Compassion","Acting with kindness toward suffering"],
+  ["Connection","Being fully present with others"],
+  ["Contribution","Giving and making a difference"],
+  ["Cooperation","Working well alongside others"],
+  ["Courage","Acting despite fear"],
+  ["Creativity","Being imaginative and original"],
+  ["Curiosity","Exploring, discovering, learning"],
+  ["Dependability","Being reliable and consistent"],
+  ["Equality","Treating people as equally worthy"],
+  ["Fairness","Acting with justice and even-handedness"],
+  ["Fitness","Caring for your physical health"],
+  ["Flexibility","Adjusting readily to change"],
+  ["Forgiveness","Letting go of resentment"],
+  ["Freedom","Living and choosing for yourself"],
+  ["Friendliness","Being warm and approachable"],
+  ["Fun","Seeking enjoyment and play"],
+  ["Generosity","Giving freely of what you have"],
+  ["Gratitude","Noticing and appreciating the good"],
+  ["Growth","Keeping on learning and developing"],
+  ["Honesty","Being truthful and sincere"],
+  ["Humility","Staying modest and grounded"],
+  ["Humor","Finding lightness and laughter"],
+  ["Independence","Standing on your own"],
+  ["Industry","Being hardworking and diligent"],
+  ["Intimacy","Opening up emotionally and physically"],
+  ["Justice","Standing up for what's right"],
+  ["Kindness","Being considerate and helpful"],
+  ["Love","Acting with affection and care"],
+  ["Mindfulness","Being aware and present in the moment"],
+  ["Openness","Staying receptive to new ideas"],
+  ["Order","Keeping things organized"],
+  ["Patience","Waiting calmly without frustration"],
+  ["Persistence","Continuing despite difficulty"],
+  ["Respect","Treating yourself and others with regard"],
+  ["Responsibility","Owning your actions and duties"],
+  ["Safety","Protecting and securing what matters"],
+  ["Self-care","Tending to your own needs"],
+  ["Spirituality","Connecting with something larger"],
+  ["Trust","Being faithful and trustworthy"]
+];
+const VALUE_SET = new Set(VALUES.map(v=>v[0]));
+
+// per-technique instruction content
+const HOWTO = {
+  reframe: {
+    title: "🌱 Thought Reframing",
+    tagline: "Catch a distorted thought and answer it with something fairer.",
+    steps: [
+      "Write down the thought exactly as it showed up, in your own words.",
+      "Name the cognitive distortion it fits — tap the picker to see all 14 with short descriptions.",
+      "Write a reframe: a kinder, more balanced and realistic way to see the same situation."
+    ],
+    note: "Over time you'll start spotting your most common distortions in the moment — that recognition is the real skill."
+  },
+  lean: {
+    title: "🌀 Leaning In",
+    tagline: "Defuse an anxious thought by exaggerating it instead of resisting it.",
+    steps: [
+      "Write down the worry or fear as it actually shows up in your head.",
+      "Now lean in: re-write it as an exaggerated, over-the-top conclusion. Push it past the point of belief, all the way to the absurd.",
+      "Read the exaggerated version back. Fighting a fear feeds it; following it to the ridiculous end tends to drain its charge and loosen its grip."
+    ],
+    note: "The goal isn't to reassure yourself it won't happen — it's to take the worry so far it stops feeling threatening and starts feeling silly."
+  },
+  values: {
+    title: "🧭 Living My Values",
+    tagline: "Check whether a thought or action moves you toward the person you want to be.",
+    steps: [
+      "First, choose a few core values that matter most to you (a one-time setup you can revisit anytime).",
+      "Log a thought, choice, or action, and mark whether it moved you toward or away from those values.",
+      "Note a small step toward the value — this keeps an \"away\" moment as useful information, not a reason to beat yourself up."
+    ],
+    note: "Drifting away from a value isn't a failure — it's a signpost. The question is simply: what's one small step back toward it?"
+  }
+};
+
+const EMPTIES = {
+  reframe: [
+    ["🌱","Plant your first thought.","Tap the button below to begin."],
+    ["☕","Nothing logged yet.","Catch a thought next time one bugs you."],
+    ["🪴","All clear here.","Your reframes will grow right here."]
+  ],
+  lean: [
+    ["🌀","Nothing to lean into yet.","Catch a worry and take it to the extreme."],
+    ["🎈","No worries logged.","Next anxious thought, blow it up on purpose."],
+    ["🃏","Empty for now.","Turn a fear into something absurd here."]
+  ],
+  values: [
+    ["🧭","No moments logged yet.","Notice a thought or action and check it against your values."],
+    ["⭐","Nothing here yet.","Catch a moment that moved you toward or away."],
+    ["🪴","Empty for now.","Your values check-ins will appear here."]
+  ]
+};
+
+// storage keys per technique
+const KEYS = { reframe: "reframer-entries-v1", lean: "reframer-lean-v1", values: "reframer-values-v1" };
+const MY_VALUES_KEY = "reframer-myvalues-v1";
+let activeTab = "reframe";
+let data = { reframe: [], lean: [], values: [] };
+let editingId = null;       // reframe sheet
+let leanEditingId = null;   // lean sheet
+let valEditingId = null;    // values sheet
+let pendingDistortion = "";
+let pendingDelete = null;
+let myValues = [];          // user's chosen core values
+let pendingAlign = "";      // "yes" | "no" for current values entry
+let pendingValueSel = [];   // value(s) chosen for current entry
+let pickerMode = "setup";   // "setup" (edit core values) | "entry" (tag this thought)
+const emptyChoice = {
+  reframe: EMPTIES.reframe[Math.floor(Math.random()*EMPTIES.reframe.length)],
+  lean: EMPTIES.lean[Math.floor(Math.random()*EMPTIES.lean.length)],
+  values: EMPTIES.values[Math.floor(Math.random()*EMPTIES.values.length)]
+};
+
+const $ = id => document.getElementById(id);
+const esc = s => (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function load() {
+  for (const k of ["reframe","lean","values"]) {
+    try { data[k] = JSON.parse(localStorage.getItem(KEYS[k])) || []; }
+    catch { data[k] = []; }
+  }
+  try { myValues = JSON.parse(localStorage.getItem(MY_VALUES_KEY)) || []; }
+  catch { myValues = []; }
+  renderHowto();
+  render();
+}
+function save() { try { localStorage.setItem(KEYS[activeTab], JSON.stringify(data[activeTab])); } catch {} }
+function saveMyValues() { try { localStorage.setItem(MY_VALUES_KEY, JSON.stringify(myValues)); } catch {} }
+
+function dayKey(ts){ const d=new Date(ts); return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate(); }
+function dayLabel(ts){
+  const d=new Date(ts), now=new Date();
+  const t=new Date(now); t.setHours(0,0,0,0);
+  const that=new Date(d); that.setHours(0,0,0,0);
+  const diff=Math.round((t-that)/86400000);
+  if(diff===0) return "Today";
+  if(diff===1) return "Yesterday";
+  if(diff<7) return d.toLocaleDateString([], {weekday:"long"});
+  return d.toLocaleDateString([], {weekday:"short", month:"short", day:"numeric"});
+}
+function timeLabel(ts){ return new Date(ts).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}); }
+
+function renderHowto(){
+  const h = HOWTO[activeTab];
+  let html =
+    '<div class="howto"><h2>'+h.title+'</h2><p class="tagline">'+esc(h.tagline)+'</p>'+
+    '<ol>'+h.steps.map(s=>'<li>'+esc(s)+'</li>').join("")+'</ol>'+
+    '<p class="note">💡 '+esc(h.note)+'</p></div>';
+  if(activeTab==="values"){
+    if(myValues.length===0){
+      html += '<div class="values-setup"><span class="vs-ico">🧭</span>'+
+        '<div class="vs-text"><div class="vs-title">Choose your core values</div>'+
+        '<div class="vs-sub">Pick a few that matter most to set up this section.</div></div>'+
+        '<button class="vs-btn" id="setupValuesBtn">Choose</button></div>';
+    } else {
+      html += '<div class="values-setup compact"><span class="vs-ico">🧭</span>'+
+        '<div class="vs-text"><div class="vs-title">My values</div>'+
+        '<div class="my-values">'+myValues.map(v=>'<span class="vchip">'+esc(v)+'</span>').join("")+'</div></div>'+
+        '<button class="vs-btn" id="setupValuesBtn">Edit</button></div>';
+    }
+  }
+  $("howto").innerHTML = html;
+  const sb = $("setupValuesBtn");
+  if(sb) sb.addEventListener("click", ()=>openValuesPicker("setup"));
+}
+
+function render(){
+  const q = $("search").value.trim().toLowerCase();
+  const entries = data[activeTab];
+  let items = entries.slice().sort((a,b)=>b.ts-a.ts);
+  if(q) items = items.filter(e =>
+    (e.thought||"").toLowerCase().includes(q) ||
+    (e.reframe||"").toLowerCase().includes(q) ||
+    (e.exag||"").toLowerCase().includes(q) ||
+    (e.step||"").toLowerCase().includes(q) ||
+    (e.values ? e.values.join(" ").toLowerCase().includes(q) : false) ||
+    (e.distortion||"").toLowerCase().includes(q));
+
+  const n = entries.length;
+  let countText;
+  if(activeTab==="reframe"){
+    countText = n===0 ? "Let's catch your first thought" : n + (n===1?" thought reframed ✨":" thoughts reframed ✨");
+  } else if(activeTab==="lean"){
+    countText = n===0 ? "Let's catch your first worry" : n + (n===1?" worry leaned into 🌀":" worries leaned into 🌀");
+  } else {
+    countText = n===0 ? "Notice your first moment" : n + (n===1?" moment checked 🧭":" moments checked 🧭");
+  }
+  $("count").textContent = countText;
+
+  const list = $("list");
+  if(items.length===0){
+    const e = q ? ["🔍","No matches.","Try a different word."] : emptyChoice[activeTab];
+    list.innerHTML = '<div class="empty"><div class="big">'+e[0]+'</div><p>'+esc(e[1])+'</p><p class="hint">'+esc(e[2])+'</p></div>';
+    return;
+  }
+
+  let html=""; let lastDay=null;
+  for(const e of items){
+    const dk=dayKey(e.ts);
+    if(dk!==lastDay){
+      if(lastDay!==null) html+="</div>";
+      html+='<div class="day-group"><p class="day-label">'+esc(dayLabel(e.ts))+'</p>';
+      lastDay=dk;
+    }
+    html+='<div class="card" data-card="'+e.id+'">'+
+      '<div class="card-top"><span class="time">'+esc(timeLabel(e.ts))+'</span>'+
+        '<span class="actions">'+
+          '<button class="icon-btn" data-edit="'+e.id+'" aria-label="Edit">✏️</button>'+
+          '<button class="icon-btn del" data-del="'+e.id+'" aria-label="Delete">🗑️</button>'+
+        '</span></div>'+
+      '<p class="thought-text">'+esc(e.thought)+'</p>';
+    if(activeTab==="reframe"){
+      const col = COLOR_OF[e.distortion] || "#7b7468";
+      html += (e.distortion ? '<span class="tag" style="background:'+col+'22;color:'+col+';border-color:'+col+'44;"><span class="dot" style="background:'+col+';"></span>'+esc(e.distortion)+'</span>' : '')+
+        (e.reframe ? '<div class="reframe-block"><span class="reframe-label">🌱 Reframe</span><p class="reframe-text">'+esc(e.reframe)+'</p></div>' : '');
+    } else if(activeTab==="lean"){
+      html += (e.exag ? '<div class="reframe-block"><span class="reframe-label lean">🌀 Taken to the extreme</span><p class="reframe-text">'+esc(e.exag)+'</p></div>' : '');
+    } else {
+      if(e.align){
+        html += '<span class="align-badge '+(e.align==="yes"?"yes":"no")+'">'+(e.align==="yes"?"✓ Toward my values":"↩ Away from my values")+'</span>';
+      }
+      if(e.values && e.values.length){
+        html += '<div class="card-values">'+e.values.map(v=>'<span class="card-vchip">'+esc(v)+'</span>').join("")+'</div>';
+      }
+      if(e.step){
+        html += '<div class="reframe-block"><span class="reframe-label step">🌱 A step toward this value</span><p class="reframe-text">'+esc(e.step)+'</p></div>';
+      }
+    }
+    html += '</div>';
+  }
+  if(lastDay!==null) html+="</div>";
+  list.innerHTML=html;
+}
+
+function openSheet(sheet, backdrop){ backdrop.classList.add("open"); requestAnimationFrame(()=>sheet.classList.add("open")); }
+function closeSheet(sheet, backdrop){ sheet.classList.remove("open"); backdrop.classList.remove("open"); }
+
+/* tab switching */
+function setTab(tab){
+  activeTab = tab;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.getAttribute("data-tab")===tab));
+  $("fabLabel").textContent = tab==="reframe" ? "Catch a thought" : (tab==="lean" ? "Catch a worry" : "Log a moment");
+  $("search").value = "";
+  renderHowto();
+  render();
+}
+$("tabs").addEventListener("click", e=>{
+  const t = e.target.closest("[data-tab]"); if(!t) return;
+  setTab(t.getAttribute("data-tab"));
+});
+
+/* ---- Reframe sheet ---- */
+function openEntry(entry){
+  editingId = entry ? entry.id : null;
+  $("sheetTitle").textContent = entry ? "Edit thought" : "New thought";
+  $("thought").value = entry ? entry.thought : "";
+  $("reframe").value = entry ? entry.reframe : "";
+  setDistortion(entry ? entry.distortion : "");
+  openSheet($("entrySheet"), $("entryBackdrop"));
+  setTimeout(()=>$("thought").focus(), 340);
+}
+function closeEntry(){ closeSheet($("entrySheet"), $("entryBackdrop")); }
+
+function setDistortion(val){
+  pendingDistortion = val || "";
+  const lbl = $("distLabel"), trig = $("distTrigger");
+  if(pendingDistortion){
+    const col = COLOR_OF[pendingDistortion] || "var(--ink)";
+    lbl.innerHTML = '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+col+';margin-right:8px;vertical-align:middle;"></span>'+esc(pendingDistortion);
+    trig.classList.remove("placeholder");
+  } else { lbl.textContent = "Tap to choose…"; trig.classList.add("placeholder"); }
+}
+
+function buildPicker(){
+  let html = '<li data-pick="" class="'+(!pendingDistortion?'sel':'')+'"><span class="swatch" style="background:var(--ink-faint);"></span><div><div class="dname dnone">No distortion / not sure</div></div></li>';
+  for(const [name, desc, col] of DISTORTIONS){
+    html += '<li data-pick="'+esc(name)+'" class="'+(pendingDistortion===name?'sel':'')+'">'+
+      '<span class="swatch" style="background:'+col+';"></span>'+
+      '<div><div class="dname">'+esc(name)+'</div><div class="ddesc">'+esc(desc)+'</div></div></li>';
+  }
+  $("dlist").innerHTML = html;
+}
+
+$("cancelBtn").addEventListener("click", closeEntry);
+$("entryBackdrop").addEventListener("click", closeEntry);
+$("saveBtn").addEventListener("click", ()=>{
+  const t=$("thought").value.trim();
+  if(!t){ $("thought").focus(); return; }
+  const r=$("reframe").value.trim();
+  const arr = data.reframe;
+  if(editingId){
+    data.reframe = arr.map(e => e.id===editingId ? {...e, thought:t, distortion:pendingDistortion, reframe:r} : e);
+  } else {
+    arr.push({ id:"e"+Date.now()+Math.random().toString(36).slice(2,6), ts:Date.now(), thought:t, distortion:pendingDistortion, reframe:r });
+  }
+  save(); closeEntry(); render();
+});
+
+$("distTrigger").addEventListener("click", ()=>{ buildPicker(); openSheet($("pickSheet"), $("pickBackdrop")); });
+$("pickBackdrop").addEventListener("click", ()=>closeSheet($("pickSheet"), $("pickBackdrop")));
+$("dlist").addEventListener("click", e=>{
+  const li=e.target.closest("[data-pick]"); if(!li) return;
+  setDistortion(li.getAttribute("data-pick"));
+  closeSheet($("pickSheet"), $("pickBackdrop"));
+});
+
+/* ---- Leaning In sheet ---- */
+function openLean(entry){
+  leanEditingId = entry ? entry.id : null;
+  $("leanTitle").textContent = entry ? "Edit worry" : "New worry";
+  $("leanThought").value = entry ? entry.thought : "";
+  $("leanExag").value = entry ? entry.exag : "";
+  openSheet($("leanSheet"), $("leanBackdrop"));
+  setTimeout(()=>$("leanThought").focus(), 340);
+}
+function closeLean(){ closeSheet($("leanSheet"), $("leanBackdrop")); }
+$("leanCancel").addEventListener("click", closeLean);
+$("leanBackdrop").addEventListener("click", closeLean);
+$("leanSave").addEventListener("click", ()=>{
+  const t=$("leanThought").value.trim();
+  if(!t){ $("leanThought").focus(); return; }
+  const x=$("leanExag").value.trim();
+  const arr = data.lean;
+  if(leanEditingId){
+    data.lean = arr.map(e => e.id===leanEditingId ? {...e, thought:t, exag:x} : e);
+  } else {
+    arr.push({ id:"l"+Date.now()+Math.random().toString(36).slice(2,6), ts:Date.now(), thought:t, exag:x });
+  }
+  save(); closeLean(); render();
+});
+
+/* ---- Living My Values sheet ---- */
+function setAlign(val){
+  pendingAlign = val || "";
+  const tog = $("alignToggle");
+  tog.querySelectorAll("button").forEach(b=>{
+    b.classList.remove("sel-yes","sel-no");
+    const a = b.getAttribute("data-align");
+    if(a===pendingAlign) b.classList.add(a==="yes" ? "sel-yes" : "sel-no");
+  });
+  // adapt the "step" prompt to the alignment
+  if(pendingAlign==="no"){
+    $("stepLabel").textContent = "🌱 A small step back toward this value";
+    $("stepHelper").textContent = "Not a reprimand — just one small, doable action that points back toward what matters.";
+  } else {
+    $("stepLabel").textContent = "🌱 A step that keeps living this value";
+    $("stepHelper").textContent = "What's one small way to keep moving in this direction?";
+  }
+}
+
+function setEntryValues(vals){
+  pendingValueSel = vals || [];
+  const lbl = $("valLabel"), trig = $("valTrigger");
+  if(pendingValueSel.length){
+    lbl.textContent = pendingValueSel.join(", ");
+    trig.classList.remove("placeholder");
+  } else { lbl.textContent = "Tap to choose…"; trig.classList.add("placeholder"); }
+}
+
+function openVal(entry){
+  // gently nudge to set up values first, but don't block
+  if(myValues.length===0 && !entry){
+    openValuesPicker("setup");
+    return;
+  }
+  valEditingId = entry ? entry.id : null;
+  $("valTitle").textContent = entry ? "Edit moment" : "New thought";
+  $("valThought").value = entry ? entry.thought : "";
+  $("valStep").value = entry ? (entry.step||"") : "";
+  setAlign(entry ? (entry.align||"") : "");
+  setEntryValues(entry ? (entry.values||[]).slice() : []);
+  openSheet($("valSheet"), $("valBackdrop"));
+  setTimeout(()=>$("valThought").focus(), 340);
+}
+function closeVal(){ closeSheet($("valSheet"), $("valBackdrop")); }
+$("valCancel").addEventListener("click", closeVal);
+$("valBackdrop").addEventListener("click", closeVal);
+$("alignToggle").addEventListener("click", e=>{
+  const b = e.target.closest("[data-align]"); if(!b) return;
+  setAlign(b.getAttribute("data-align"));
+});
+$("valTrigger").addEventListener("click", ()=>openValuesPicker("entry"));
+$("valSave").addEventListener("click", ()=>{
+  const t=$("valThought").value.trim();
+  if(!t){ $("valThought").focus(); return; }
+  const entryObj = { thought:t, align:pendingAlign, values:pendingValueSel.slice(), step:$("valStep").value.trim() };
+  const arr = data.values;
+  if(valEditingId){
+    data.values = arr.map(e => e.id===valEditingId ? {...e, ...entryObj} : e);
+  } else {
+    arr.push({ id:"v"+Date.now()+Math.random().toString(36).slice(2,6), ts:Date.now(), ...entryObj });
+  }
+  save(); closeVal(); render();
+});
+
+/* ---- Values multi-select picker (setup + per-entry) ---- */
+let vpickSel = [];
+function openValuesPicker(mode){
+  pickerMode = mode;
+  vpickSel = mode==="setup" ? myValues.slice() : pendingValueSel.slice();
+  if(mode==="setup"){
+    $("vpickTitle").textContent = "Choose your core values";
+    $("vpickHint").textContent = "Pick the few that matter most — you can change these anytime.";
+    buildValueGrid(VALUES);
+  } else {
+    $("vpickTitle").textContent = "Which value(s)?";
+    $("vpickHint").textContent = "Tag the value(s) this moment touches.";
+    // in entry mode, show the user's chosen values first (or all if none set)
+    const myList = VALUES.filter(v=>myValues.includes(v[0]));
+    buildValueGrid(myList.length ? myList : VALUES);
+  }
+  openSheet($("vpickSheet"), $("vpickBackdrop"));
+}
+function buildValueGrid(list){
+  $("vgrid").innerHTML = list.map(([name,desc])=>
+    '<button type="button" class="vopt'+(vpickSel.includes(name)?" sel":"")+'" data-val="'+esc(name)+'" title="'+esc(desc)+'">'+esc(name)+'</button>'
+  ).join("");
+}
+$("vgrid").addEventListener("click", e=>{
+  const b = e.target.closest("[data-val]"); if(!b) return;
+  const name = b.getAttribute("data-val");
+  if(vpickSel.includes(name)) vpickSel = vpickSel.filter(v=>v!==name);
+  else vpickSel.push(name);
+  b.classList.toggle("sel");
+});
+function closeVpick(){ closeSheet($("vpickSheet"), $("vpickBackdrop")); }
+$("vpickCancel").addEventListener("click", closeVpick);
+$("vpickBackdrop").addEventListener("click", closeVpick);
+$("vpickDone").addEventListener("click", ()=>{
+  if(pickerMode==="setup"){
+    myValues = vpickSel.slice();
+    saveMyValues();
+    closeVpick();
+    renderHowto();
+    render();
+  } else {
+    setEntryValues(vpickSel.slice());
+    closeVpick();
+  }
+});
+
+/* FAB opens the right sheet for the active tab */
+function openForTab(entry){
+  if(activeTab==="reframe") openEntry(entry);
+  else if(activeTab==="lean") openLean(entry);
+  else openVal(entry);
+}
+$("fab").addEventListener("click", ()=>openForTab(null));
+
+/* card actions (shared) */
+$("list").addEventListener("click", e=>{
+  const del=e.target.closest("[data-del]"), edit=e.target.closest("[data-edit]");
+  if(del){
+    pendingDelete = del.getAttribute("data-del");
+    openSheet($("confirmSheet"), $("confirmBackdrop"));
+  } else if(edit){
+    const id = edit.getAttribute("data-edit");
+    const en = data[activeTab].find(x=>x.id===id);
+    if(en) openForTab(en);
+  }
+});
+
+function closeConfirm(){ closeSheet($("confirmSheet"), $("confirmBackdrop")); pendingDelete=null; }
+$("confirmCancel").addEventListener("click", closeConfirm);
+$("confirmBackdrop").addEventListener("click", closeConfirm);
+$("confirmDelete").addEventListener("click", ()=>{
+  if(!pendingDelete){ closeConfirm(); return; }
+  const id = pendingDelete;
+  const cardEl = document.querySelector('[data-card="'+id+'"]');
+  closeSheet($("confirmSheet"), $("confirmBackdrop"));
+  const finish = ()=>{ data[activeTab] = data[activeTab].filter(x=>x.id!==id); save(); render(); };
+  if(cardEl){ cardEl.classList.add("removing"); setTimeout(finish, 280); }
+  else finish();
+  pendingDelete=null;
+});
+
+$("search").addEventListener("input", render);
+
+$("menuBtn").addEventListener("click", e=>{ e.stopPropagation(); $("menuPop").classList.toggle("open"); });
+document.addEventListener("click", ()=>$("menuPop").classList.remove("open"));
+
+/* export = all techniques together; import merges into the right buckets */
+$("exportBtn").addEventListener("click", ()=>{
+  const payload = { version: 3, reframe: data.reframe, lean: data.lean, values: data.values, myValues: myValues };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "mindbloom-backup-"+new Date().toISOString().slice(0,10)+".json";
+  a.click(); URL.revokeObjectURL(url);
+});
+$("importBtn").addEventListener("click", ()=>$("fileInput").click());
+$("fileInput").addEventListener("change", e=>{
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try {
+      const parsed = JSON.parse(r.result);
+      let added = 0;
+      const merge = (key, arr) => {
+        if(!Array.isArray(arr)) return;
+        const existing = new Set(data[key].map(x=>x.id));
+        for(const d of arr){ if(d && d.id && !existing.has(d.id)){ data[key].push(d); added++; } }
+      };
+      if(Array.isArray(parsed)){
+        // legacy v1 backup: a flat array of reframe entries
+        merge("reframe", parsed);
+      } else {
+        merge("reframe", parsed.reframe);
+        merge("lean", parsed.lean);
+        merge("values", parsed.values);
+        // adopt saved core values only if the user hasn't set any yet
+        if(myValues.length===0 && Array.isArray(parsed.myValues)){
+          myValues = parsed.myValues.filter(v=>VALUE_SET.has(v));
+          saveMyValues();
+        }
+      }
+      localStorage.setItem(KEYS.reframe, JSON.stringify(data.reframe));
+      localStorage.setItem(KEYS.lean, JSON.stringify(data.lean));
+      localStorage.setItem(KEYS.values, JSON.stringify(data.values));
+      renderHowto();
+      render();
+      alert("Imported "+added+" new "+(added===1?"entry":"entries")+".");
+    } catch { alert("That file couldn't be read as a MindBloom backup."); }
+  };
+  r.readAsText(file);
+  e.target.value="";
+});
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+
+setTab("reframe");
+load();
+</script>
+</body>
+</html>
