@@ -240,6 +240,27 @@
   .dnone { color: var(--ink-soft); }
 
   /* values setup banner */
+  .backup-reminder {
+    background: var(--accent-soft); border: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: var(--radius); padding: 14px 16px; margin-top: 18px;
+    display: flex; align-items: center; gap: 13px; animation: pop 0.3s ease both;
+  }
+  .backup-reminder .br-ico { font-size: 24px; flex-shrink: 0; }
+  .backup-reminder .br-text { flex: 1; }
+  .backup-reminder .br-title { font-size: 14.5px; font-weight: 800; color: var(--accent-ink); }
+  .backup-reminder .br-sub { font-size: 12.5px; color: var(--ink-soft); font-weight: 500; margin-top: 2px; }
+  .backup-reminder .br-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .backup-reminder .br-btn {
+    font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    border-radius: 999px; padding: 8px 14px; border: 2px solid var(--accent); background: var(--accent); color: #fff;
+  }
+  .backup-reminder .br-btn:active { transform: scale(0.95); }
+  .backup-reminder .br-dismiss {
+    font: inherit; font-size: 18px; cursor: pointer; border: none; background: none;
+    color: var(--ink-faint); padding: 4px 6px; border-radius: 8px; line-height: 1;
+  }
+  .backup-reminder .br-dismiss:active { background: color-mix(in srgb, var(--accent) 15%, transparent); }
+
   .values-setup {
     background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius);
     padding: 16px 18px; margin-top: 18px; display: flex; align-items: center; gap: 14px;
@@ -293,6 +314,57 @@
   .card-values { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .card-vchip { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--line-soft); color: var(--ink-soft); }
   .reframe-label.step { color: var(--accent); }
+
+  /* ERP slider */
+  .erp-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--teal), var(--sun), var(--danger)); outline: none; margin: 6px 0 4px; }
+  .erp-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface); border: 3px solid var(--accent); cursor: pointer; box-shadow: 0 2px 6px rgba(40,25,15,0.2); }
+  .erp-slider::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: var(--surface);
+    border: 3px solid var(--accent); cursor: pointer; }
+  .erp-scale { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--ink-faint); }
+
+  /* ERP status toggle */
+  .status-toggle { display: flex; gap: 8px; }
+  .status-toggle button {
+    flex: 1; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+    padding: 11px 8px; border-radius: var(--radius-sm); border: 2px solid var(--line);
+    background: var(--bg); color: var(--ink-soft); transition: all 0.12s;
+  }
+  .status-toggle button:active { transform: scale(0.97); }
+  .status-toggle button.on-todo { border-color: var(--ink-faint); background: var(--line-soft); color: var(--ink); }
+  .status-toggle button.on-doing { border-color: var(--sun); background: color-mix(in srgb, var(--sun) 16%, transparent); color: var(--accent-ink); }
+  .status-toggle button.on-done { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 16%, transparent); color: var(--teal); }
+
+  /* ERP ladder cards */
+  .erp-card {
+    background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 11px; cursor: pointer;
+    display: flex; align-items: center; gap: 14px;
+    animation: pop 0.32s cubic-bezier(0.34,1.56,0.64,1) both;
+    transition: transform 0.16s, box-shadow 0.16s, border-color 0.16s;
+  }
+  .erp-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(120,80,40,0.10); }
+  .erp-card.removing { animation: zip 0.28s ease forwards; }
+  .erp-card.done { border-color: color-mix(in srgb, var(--teal) 40%, transparent); }
+  .erp-card.done .erp-sit { text-decoration: line-through; color: var(--ink-soft); }
+  .erp-rating {
+    flex-shrink: 0; width: 46px; height: 46px; border-radius: 14px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; font-weight: 800; line-height: 1;
+  }
+  .erp-rating .num { font-size: 20px; }
+  .erp-rating .of { font-size: 9px; font-weight: 700; opacity: 0.7; margin-top: 1px; }
+  .erp-body { flex: 1; min-width: 0; }
+  .erp-sit { font-size: 15.5px; font-weight: 600; color: var(--ink); }
+  .erp-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+  .erp-status-pill { font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+  .erp-status-pill.todo { background: var(--line-soft); color: var(--ink-soft); }
+  .erp-status-pill.doing { background: color-mix(in srgb, var(--sun) 20%, transparent); color: var(--accent-ink); }
+  .erp-status-pill.done { background: color-mix(in srgb, var(--teal) 18%, transparent); color: var(--teal); }
+  .erp-hasplan { font-size: 11.5px; color: var(--ink-faint); font-weight: 600; }
+  .erp-chev { flex-shrink: 0; color: var(--ink-faint); font-size: 18px; }
+  .erp-detail-sit { font-size: 19px; font-weight: 800; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .erp-detail-rating { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; color: var(--ink-soft); margin-bottom: 18px; }
 
   .confirm-box { text-align: center; padding: 6px 4px; }
   .confirm-box .ico { font-size: 40px; margin-bottom: 8px; }
@@ -381,6 +453,7 @@
     <button class="tab active" data-tab="reframe">🌱 Thought Reframing</button>
     <button class="tab" data-tab="lean">🌀 Leaning In</button>
     <button class="tab" data-tab="values">🧭 Living My Values</button>
+    <button class="tab" data-tab="erp">🪜 Exposure Ladder</button>
   </div>
 </header>
 
@@ -389,6 +462,7 @@
     <input id="search" type="search" placeholder="🔍  Search your entries…" autocomplete="off" />
   </div>
   <div id="howto"></div>
+  <div id="backupReminder" style="display:none;"></div>
   <div id="list"></div>
 </div>
 
@@ -436,6 +510,53 @@
   <div class="sheet-actions">
     <button class="btn" id="leanCancel">Cancel</button>
     <button class="btn btn-primary" id="leanSave">Save it</button>
+  </div>
+</div>
+
+<!-- ERP add/edit situation sheet -->
+<div class="sheet-backdrop" id="erpBackdrop"></div>
+<div class="sheet" id="erpSheet" role="dialog" aria-modal="true">
+  <div class="grabber"></div>
+  <h2 id="erpTitle">New situation</h2>
+  <div class="field">
+    <label for="erpSit">😰 The anxiety-producing situation</label>
+    <textarea id="erpSit" rows="2" placeholder="e.g. Touching a door handle without washing after"></textarea>
+  </div>
+  <div class="field">
+    <label>📊 Anxiety level: <span id="erpRatingVal" style="color:var(--accent);font-weight:800;">5</span> / 10</label>
+    <input type="range" id="erpRating" min="1" max="10" value="5" class="erp-slider" />
+    <div class="erp-scale"><span>1 · mild</span><span>10 · severe</span></div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn" id="erpCancel">Cancel</button>
+    <button class="btn btn-primary" id="erpSave">Save</button>
+  </div>
+</div>
+
+<!-- ERP detail sheet (plan + status) -->
+<div class="sheet-backdrop" id="erpDetailBackdrop"></div>
+<div class="sheet" id="erpDetailSheet" role="dialog" aria-modal="true">
+  <div class="grabber"></div>
+  <div id="erpDetailHead"></div>
+  <div class="field">
+    <label for="erpPlan">🎯 How will you face this?</label>
+    <p class="helper">Your exposure plan — what you'll do, and the response (like checking or avoiding) you'll resist.</p>
+    <textarea id="erpPlan" rows="3" placeholder="e.g. Touch the handle, then wait 10 minutes before washing. Sit with the discomfort."></textarea>
+  </div>
+  <div class="field">
+    <label>🚦 Status</label>
+    <div class="status-toggle" id="erpStatus">
+      <button type="button" data-st="todo">To face</button>
+      <button type="button" data-st="doing">Facing</button>
+      <button type="button" data-st="done">Faced ✓</button>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn" id="erpDetailEdit">✏️ Edit situation</button>
+    <button class="btn btn-primary" id="erpDetailSave">Save</button>
+  </div>
+  <div style="margin-top:12px;text-align:center;">
+    <button id="erpDetailDelete" style="font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--danger);padding:8px 14px;border-radius:9px;">🗑️ Delete this rung</button>
   </div>
 </div>
 
@@ -611,6 +732,16 @@ const HOWTO = {
       "Note a small step toward the value — this keeps an \"away\" moment as useful information, not a reason to beat yourself up."
     ],
     note: "Drifting away from a value isn't a failure — it's a signpost. The question is simply: what's one small step back toward it?"
+  },
+  erp: {
+    title: "🪜 Exposure Ladder",
+    tagline: "Build a ranked list of feared situations and face them gradually, from easiest to hardest.",
+    steps: [
+      "Add anxiety-producing situations, rating each 1–10 for how much distress it brings. They sort automatically, easiest first.",
+      "Start near the bottom. Tap a rung to plan how you'll face it — and which response (like checking, washing, or avoiding) you'll resist.",
+      "Work a rung until the anxiety eases, then mark it Faced and climb to the next. Repeat exposures matter more than doing each once."
+    ],
+    note: "ERP works best with the support of a trained therapist, especially for OCD or significant anxiety. This ladder is a tool to organize that work, not a replacement for professional care."
   }
 };
 
@@ -629,17 +760,27 @@ const EMPTIES = {
     ["🧭","No moments logged yet.","Notice a thought or action and check it against your values."],
     ["⭐","Nothing here yet.","Catch a moment that moved you toward or away."],
     ["🪴","Empty for now.","Your values check-ins will appear here."]
+  ],
+  erp: [
+    ["🪜","Your ladder is empty.","Add a feared situation and rate it 1–10."],
+    ["🧗","Nothing to climb yet.","Build your hierarchy from easiest to hardest."],
+    ["🎯","No rungs yet.","Start with something that feels manageable."]
   ]
 };
 
 // storage keys per technique
-const KEYS = { reframe: "reframer-entries-v1", lean: "reframer-lean-v1", values: "reframer-values-v1" };
+const KEYS = { reframe: "reframer-entries-v1", lean: "reframer-lean-v1", values: "reframer-values-v1", erp: "mindbloom-erp-v1" };
 const MY_VALUES_KEY = "reframer-myvalues-v1";
+const BACKUP_AT_KEY = "mindbloom-backup-count-v1"; // total entry count at last export/dismiss
+const BACKUP_THRESHOLD = 10; // remind after this many new entries since last backup
 let activeTab = "reframe";
-let data = { reframe: [], lean: [], values: [] };
+let data = { reframe: [], lean: [], values: [], erp: [] };
 let editingId = null;       // reframe sheet
 let leanEditingId = null;   // lean sheet
 let valEditingId = null;    // values sheet
+let erpEditingId = null;    // erp add/edit sheet
+let erpDetailId = null;     // erp detail sheet (currently open rung)
+let pendingErpStatus = "todo";
 let pendingDistortion = "";
 let pendingDelete = null;
 let myValues = [];          // user's chosen core values
@@ -649,14 +790,15 @@ let pickerMode = "setup";   // "setup" (edit core values) | "entry" (tag this th
 const emptyChoice = {
   reframe: EMPTIES.reframe[Math.floor(Math.random()*EMPTIES.reframe.length)],
   lean: EMPTIES.lean[Math.floor(Math.random()*EMPTIES.lean.length)],
-  values: EMPTIES.values[Math.floor(Math.random()*EMPTIES.values.length)]
+  values: EMPTIES.values[Math.floor(Math.random()*EMPTIES.values.length)],
+  erp: EMPTIES.erp[Math.floor(Math.random()*EMPTIES.erp.length)]
 };
 
 const $ = id => document.getElementById(id);
 const esc = s => (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 function load() {
-  for (const k of ["reframe","lean","values"]) {
+  for (const k of ["reframe","lean","values","erp"]) {
     try { data[k] = JSON.parse(localStorage.getItem(KEYS[k])) || []; }
     catch { data[k] = []; }
   }
@@ -705,7 +847,31 @@ function renderHowto(){
   if(sb) sb.addEventListener("click", ()=>openValuesPicker("setup"));
 }
 
+function totalEntries(){ return data.reframe.length + data.lean.length + data.values.length + data.erp.length; }
+function getBackupCount(){ try { return parseInt(localStorage.getItem(BACKUP_AT_KEY) || "0", 10) || 0; } catch { return 0; } }
+function markBackedUp(){ try { localStorage.setItem(BACKUP_AT_KEY, String(totalEntries())); } catch {} renderBackupReminder(); }
+
+function renderBackupReminder(){
+  const box = $("backupReminder");
+  const sinceBackup = totalEntries() - getBackupCount();
+  if(sinceBackup >= BACKUP_THRESHOLD){
+    box.style.display = "block";
+    box.innerHTML =
+      '<div class="backup-reminder"><span class="br-ico">💾</span>'+
+      '<div class="br-text"><div class="br-title">Time to back up</div>'+
+      '<div class="br-sub">You\'ve added '+sinceBackup+' entries since your last export. Save a copy so you don\'t lose them.</div></div>'+
+      '<div class="br-actions"><button class="br-btn" id="brExport">Export</button>'+
+      '<button class="br-dismiss" id="brDismiss" aria-label="Dismiss">✕</button></div></div>';
+    $("brExport").addEventListener("click", ()=>$("exportBtn").click());
+    $("brDismiss").addEventListener("click", markBackedUp); // dismiss resets the counter too
+  } else {
+    box.style.display = "none";
+    box.innerHTML = "";
+  }
+}
+
 function render(){
+  if(activeTab==="erp"){ renderErp(); return; }
   const q = $("search").value.trim().toLowerCase();
   const entries = data[activeTab];
   let items = entries.slice().sort((a,b)=>b.ts-a.ts);
@@ -727,6 +893,7 @@ function render(){
     countText = n===0 ? "Notice your first moment" : n + (n===1?" moment checked 🧭":" moments checked 🧭");
   }
   $("count").textContent = countText;
+  renderBackupReminder();
 
   const list = $("list");
   if(items.length===0){
@@ -773,14 +940,59 @@ function render(){
   list.innerHTML=html;
 }
 
-function openSheet(sheet, backdrop){ backdrop.classList.add("open"); requestAnimationFrame(()=>sheet.classList.add("open")); }
-function closeSheet(sheet, backdrop){ sheet.classList.remove("open"); backdrop.classList.remove("open"); }
+function erpRatingColor(r){
+  // 1-3 teal (mild), 4-6 sun (moderate), 7-10 danger (severe)
+  if(r<=3) return "var(--teal)";
+  if(r<=6) return "var(--sun)";
+  return "var(--danger)";
+}
+function erpRatingBg(r){
+  if(r<=3) return "color-mix(in srgb, var(--teal) 18%, transparent)";
+  if(r<=6) return "color-mix(in srgb, var(--sun) 22%, transparent)";
+  return "color-mix(in srgb, var(--danger) 18%, transparent)";
+}
+const ERP_STATUS = { todo:["To face","todo"], doing:["Facing","doing"], done:["Faced ✓","done"] };
+
+function renderErp(){
+  const q = $("search").value.trim().toLowerCase();
+  let items = data.erp.slice();
+  // auto-sort ascending by anxiety rating, then by creation time for ties
+  items.sort((a,b)=> (a.rating-b.rating) || (a.ts-b.ts));
+  if(q) items = items.filter(e =>
+    (e.situation||"").toLowerCase().includes(q) || (e.plan||"").toLowerCase().includes(q));
+
+  const n = data.erp.length;
+  const faced = data.erp.filter(e=>e.status==="done").length;
+  $("count").textContent = n===0 ? "Build your first rung" :
+    (n + (n===1?" rung":" rungs") + (faced? " · "+faced+" faced ✓":""));
+  renderBackupReminder();
+
+  const list = $("list");
+  if(items.length===0){
+    const e = q ? ["🔍","No matches.","Try a different word."] : emptyChoice.erp;
+    list.innerHTML = '<div class="empty"><div class="big">'+e[0]+'</div><p>'+esc(e[1])+'</p><p class="hint">'+esc(e[2])+'</p></div>';
+    return;
+  }
+
+  list.innerHTML = items.map(e=>{
+    const col = erpRatingColor(e.rating), bg = erpRatingBg(e.rating);
+    const st = ERP_STATUS[e.status] || ERP_STATUS.todo;
+    return '<div class="erp-card'+(e.status==="done"?" done":"")+'" data-erp="'+e.id+'">'+
+      '<div class="erp-rating" style="background:'+bg+';color:'+col+';"><span class="num">'+e.rating+'</span><span class="of">/10</span></div>'+
+      '<div class="erp-body"><div class="erp-sit">'+esc(e.situation)+'</div>'+
+        '<div class="erp-meta"><span class="erp-status-pill '+st[1]+'">'+st[0]+'</span>'+
+        (e.plan ? '<span class="erp-hasplan">📝 has a plan</span>' : '<span class="erp-hasplan">tap to plan</span>')+
+        '</div></div>'+
+      '<span class="erp-chev">›</span>'+
+    '</div>';
+  }).join("");
+}
 
 /* tab switching */
 function setTab(tab){
   activeTab = tab;
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.getAttribute("data-tab")===tab));
-  $("fabLabel").textContent = tab==="reframe" ? "Catch a thought" : (tab==="lean" ? "Catch a worry" : "Log a moment");
+  $("fabLabel").textContent = tab==="reframe" ? "Catch a thought" : (tab==="lean" ? "Catch a worry" : (tab==="values" ? "Log a moment" : "Add a rung"));
   $("search").value = "";
   renderHowto();
   render();
@@ -868,6 +1080,78 @@ $("leanSave").addEventListener("click", ()=>{
     arr.push({ id:"l"+Date.now()+Math.random().toString(36).slice(2,6), ts:Date.now(), thought:t, exag:x });
   }
   save(); closeLean(); render();
+});
+
+/* ---- ERP Exposure Ladder sheets ---- */
+$("erpRating").addEventListener("input", ()=>{ $("erpRatingVal").textContent = $("erpRating").value; });
+
+function openErp(entry){
+  erpEditingId = entry ? entry.id : null;
+  $("erpTitle").textContent = entry ? "Edit situation" : "New situation";
+  $("erpSit").value = entry ? entry.situation : "";
+  const r = entry ? entry.rating : 5;
+  $("erpRating").value = r; $("erpRatingVal").textContent = r;
+  openSheet($("erpSheet"), $("erpBackdrop"));
+  setTimeout(()=>$("erpSit").focus(), 340);
+}
+function closeErp(){ closeSheet($("erpSheet"), $("erpBackdrop")); }
+$("erpCancel").addEventListener("click", closeErp);
+$("erpBackdrop").addEventListener("click", closeErp);
+$("erpSave").addEventListener("click", ()=>{
+  const s=$("erpSit").value.trim();
+  if(!s){ $("erpSit").focus(); return; }
+  const rating = parseInt($("erpRating").value, 10);
+  if(erpEditingId){
+    data.erp = data.erp.map(e => e.id===erpEditingId ? {...e, situation:s, rating:rating} : e);
+  } else {
+    data.erp.push({ id:"x"+Date.now()+Math.random().toString(36).slice(2,6), ts:Date.now(), situation:s, rating:rating, plan:"", status:"todo" });
+  }
+  save(); closeErp();
+  render();
+});
+
+function setErpStatus(st){
+  pendingErpStatus = st || "todo";
+  const tog = $("erpStatus");
+  tog.querySelectorAll("button").forEach(b=>{
+    b.classList.remove("on-todo","on-doing","on-done");
+    const s = b.getAttribute("data-st");
+    if(s===pendingErpStatus) b.classList.add("on-"+s);
+  });
+}
+$("erpStatus").addEventListener("click", e=>{
+  const b = e.target.closest("[data-st]"); if(!b) return;
+  setErpStatus(b.getAttribute("data-st"));
+});
+
+function openErpDetail(id){
+  const e = data.erp.find(x=>x.id===id); if(!e) return;
+  erpDetailId = id;
+  const col = erpRatingColor(e.rating);
+  $("erpDetailHead").innerHTML =
+    '<p class="erp-detail-sit">'+esc(e.situation)+'</p>'+
+    '<span class="erp-detail-rating"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:'+col+';"></span>Anxiety '+e.rating+' / 10</span>';
+  $("erpPlan").value = e.plan || "";
+  setErpStatus(e.status || "todo");
+  openSheet($("erpDetailSheet"), $("erpDetailBackdrop"));
+}
+function closeErpDetail(){ closeSheet($("erpDetailSheet"), $("erpDetailBackdrop")); erpDetailId=null; }
+$("erpDetailBackdrop").addEventListener("click", closeErpDetail);
+$("erpDetailSave").addEventListener("click", ()=>{
+  if(!erpDetailId){ closeErpDetail(); return; }
+  const plan = $("erpPlan").value.trim();
+  data.erp = data.erp.map(e => e.id===erpDetailId ? {...e, plan:plan, status:pendingErpStatus} : e);
+  save(); closeErpDetail(); render();
+});
+$("erpDetailEdit").addEventListener("click", ()=>{
+  const e = data.erp.find(x=>x.id===erpDetailId); if(!e) return;
+  closeErpDetail();
+  setTimeout(()=>openErp(e), 280);
+});
+$("erpDetailDelete").addEventListener("click", ()=>{
+  const id = erpDetailId; if(!id) return;
+  closeErpDetail();
+  setTimeout(()=>{ pendingDelete = id; openSheet($("confirmSheet"), $("confirmBackdrop")); }, 280);
 });
 
 /* ---- Living My Values sheet ---- */
@@ -984,12 +1268,16 @@ $("vpickDone").addEventListener("click", ()=>{
 function openForTab(entry){
   if(activeTab==="reframe") openEntry(entry);
   else if(activeTab==="lean") openLean(entry);
-  else openVal(entry);
+  else if(activeTab==="values") openVal(entry);
+  else openErp(entry);
 }
 $("fab").addEventListener("click", ()=>openForTab(null));
 
 /* card actions (shared) */
 $("list").addEventListener("click", e=>{
+  // ERP cards open the detail sheet on tap
+  const erpCard = e.target.closest("[data-erp]");
+  if(erpCard){ openErpDetail(erpCard.getAttribute("data-erp")); return; }
   const del=e.target.closest("[data-del]"), edit=e.target.closest("[data-edit]");
   if(del){
     pendingDelete = del.getAttribute("data-del");
@@ -1007,7 +1295,7 @@ $("confirmBackdrop").addEventListener("click", closeConfirm);
 $("confirmDelete").addEventListener("click", ()=>{
   if(!pendingDelete){ closeConfirm(); return; }
   const id = pendingDelete;
-  const cardEl = document.querySelector('[data-card="'+id+'"]');
+  const cardEl = document.querySelector('[data-card="'+id+'"]') || document.querySelector('[data-erp="'+id+'"]');
   closeSheet($("confirmSheet"), $("confirmBackdrop"));
   const finish = ()=>{ data[activeTab] = data[activeTab].filter(x=>x.id!==id); save(); render(); };
   if(cardEl){ cardEl.classList.add("removing"); setTimeout(finish, 280); }
@@ -1022,12 +1310,13 @@ document.addEventListener("click", ()=>$("menuPop").classList.remove("open"));
 
 /* export = all techniques together; import merges into the right buckets */
 $("exportBtn").addEventListener("click", ()=>{
-  const payload = { version: 3, reframe: data.reframe, lean: data.lean, values: data.values, myValues: myValues };
+  const payload = { version: 4, reframe: data.reframe, lean: data.lean, values: data.values, erp: data.erp, myValues: myValues };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url; a.download = "mindbloom-backup-"+new Date().toISOString().slice(0,10)+".json";
   a.click(); URL.revokeObjectURL(url);
+  markBackedUp();
 });
 $("importBtn").addEventListener("click", ()=>$("fileInput").click());
 $("fileInput").addEventListener("change", e=>{
@@ -1049,6 +1338,7 @@ $("fileInput").addEventListener("change", e=>{
         merge("reframe", parsed.reframe);
         merge("lean", parsed.lean);
         merge("values", parsed.values);
+        merge("erp", parsed.erp);
         // adopt saved core values only if the user hasn't set any yet
         if(myValues.length===0 && Array.isArray(parsed.myValues)){
           myValues = parsed.myValues.filter(v=>VALUE_SET.has(v));
@@ -1058,6 +1348,7 @@ $("fileInput").addEventListener("change", e=>{
       localStorage.setItem(KEYS.reframe, JSON.stringify(data.reframe));
       localStorage.setItem(KEYS.lean, JSON.stringify(data.lean));
       localStorage.setItem(KEYS.values, JSON.stringify(data.values));
+      localStorage.setItem(KEYS.erp, JSON.stringify(data.erp));
       renderHowto();
       render();
       alert("Imported "+added+" new "+(added===1?"entry":"entries")+".");
